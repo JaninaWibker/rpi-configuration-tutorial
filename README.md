@@ -131,7 +131,7 @@ gogs
 
 You can add things inside `custom/templates` and if needed modify things inside the normal `templates/` directory. Also adding a new css file or similar to the `public` folder is also possible. Generally don't touch the `scripts` folder and don't touch the `app.ini` unless you know what you are doing (If you decide to edit the config file, take a look [here](https://gogs.io/docs/advanced/configuration_cheat_sheet) for documentation). 
 
-Incase you want a mobile friendly and otherwise also improved gogs copy the changes (unchanged files (in `templates/`) are also in here, meaning you should be able to just replace the templates folder completely) from [here]() into your gogs installation.
+Incase you want a mobile friendly and otherwise also improved gogs copy the changes (unchanged files (in `templates/`) are also in here, meaning you should be able to just replace the templates folder completely) from [here](https://github.com/JannikWibker/gogs-reskin) into your gogs installation.
 
 ### docsify
 
