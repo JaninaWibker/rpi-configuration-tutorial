@@ -2,36 +2,36 @@
 
 ## What you need
 
-- Raspberry Pi (RPi 3 is preferred)
-- Ethernet Cable
+- Raspberry Pi (RPi 4 is preferred)
+- Ethernet cable
 - Power supply (for RPi)
-- SD Card
-- (maybe) Ethernet Switch
-- an IPv4 address (does not need to be static) or DualStack (IPv6 does not work great duo to IPv6 coverage)
-- ability to do basic port-forwarding for a single device (port 80 only)
+- SD card
+- (maybe) Ethernet switch
+- an IPv4 address (doesn't need to be static) or DualStack (IPv6 doesn't work great due to lacking IPv6 coverage)
+- ability to do basic port forwarding for a single device (port 80 only)
 
 ## General Structure
 
-Cloudflare will be used as a DNS / DynDNS service. From there connections will go through the router, to the pi (port 80). Nginx will function as a reverse proxy and proxy everything to where it needs to be (for example docsify, git server (gogs / gitea), ...). 
+Cloudflare will be used as a DNS / DynDNS service. From there connections will go through the router, to the raspberry (port 80). Nginx will function as a reverse proxy and proxy everything to where it needs to be (for example docsify, git server (Gogs / gitea), ...). 
 
 ## What will be installed?
 
-- nginx (reverse proxy and webserver) and apache2 (php)
-- ddclient to update the dns
+- nginx (reverse proxy and webserver) and apache2 (for php)
+- ddclient for dns updates
 - node for web services
 - tmux (terminal multiplexer)
 - sqlite (for small local database needs) 
-- optionally mariaDB (for remote connections)
-- optionally gogs or gitea as a private git server
-- optionally docsify as a documentation site (can be used for other things like school notes as well)
-- optionally Samba as a File server (mostly for accessing / modifiying the website content directly)
+- optionally MariaDB (for remote connections)
+- optionally Gogs or Gitea as a private git server
+- optionally Docsify as a documentation site (can be used for other things like school notes as well)
+- optionally Samba as a file server (mostly for accessing / modifiying the website content directly)
 
 ## Getting started
 
-Install raspbian on the SD card, place a file named `ssh` in the root directory in order to activate the openSSH server automatically (this means that no hdmi cable / monitor is required for setup). Connect Ethernet and Power and then connect to the pi (the default hostname is raspberrypi, it should be usable to for connecting, if not look up the ip address of the pi in the router).
-Set the hostname of the Pi to something more useful if you want to (maybe a fancy name or just "rpi3", "rpi0", ...). Giving the Pi a name inside the router is also a good idea since this name can most probably be used to connect to the pi over ssh (`ssh user@rpi3`).
+Install Raspbian on the SD card, place an empty file named `ssh` in the root directory in order to activate the OpenSSH server automatically (this way, no HDMI cable / monitor is required for setup). Connect ethernet and power and then connect to the pi (the default hostname is raspberrypi, it should be usable to for connecting, if not look up the IP address of the pi in the router).
+Set the hostname of the pi to something more useful if you want to (maybe a fancy name or just "rpi3", "rpi0", ...). Giving the pi a name inside the router is also a good idea since this name can most probably be used to connect to the pi over ssh (`ssh user@rpi3`).
 
-Set up a user and set passwords for root and the new user, maybe create users for specific things like a samba server or mariaDB as well if needed.
+Set up a user and set passwords for root and the new user, maybe create users for specific things like a samba server or MariaDB as well if needed.
 
 ## Installing things
 
@@ -69,41 +69,41 @@ NodeJS is useful for many things web related. Many services are build with node,
 
 ### ddclient
 
-ddclient is a tool for automatically updating dynamic dns servers. It runs at regular configured intervals, checks what your current ip address is and sends it to the dyndns server to update it there. It is important to download the 3.9.0 version in order to have Cloudflare support, since cloudflare uses their own "protocol" (the protocol is just a specific REST API endpoint that has to be called with the new ip address) which is not included in older ddclient versions.
+ddclient is a tool for automatically updating dynamic DNS servers. It runs at regular configured intervals, checks what your current IP address is and sends it to the DynDNS server to update it there. It is important to download the 3.9.0 version in order to have Cloudflare support, since Cloudflare uses their own "protocol" (the protocol is just a specific REST API endpoint that has to be called with the new IP address) which is not included in older ddclient versions.
 
 Use the `install_ddclient` script to install ddclient 3.9.0.
 
 ### sqlite
 
-Sqlite3 is a small file based sql database that is great for smaller projects since it is file based and comes without many of the more complicated database features such as users and permissions. Ultimately you probably want to use a "real" database solution once the project gets to a pretty large size, but sqlite is good for a long time and is hassle free unlike other databases. For rather low-level things sqlite is great, even at scale. Many android apps, as well as low-level applications use sqlite as a local database making it the most widely used database (this is rather similar to linux being the most used operating system, you don't really notice linux anywhere but it is still used everywhere).
+Sqlite3 is a small file based SQL database that is great for smaller projects since it is file based and comes without many of the more complicated database features such as users and permissions. Ultimately you probably want to use a "real" database solution once the project gets to a pretty large size, but sqlite is good for a long time and is hassle free unlike other databases. For rather low-level things sqlite is great, even at scale. Many android apps, as well as low-level applications use sqlite as a local database making it the most widely used database (this is rather similar to linux being the most used operating system, you don't really notice linux anywhere but it is still used everywhere).
 
-### mariaDB
+### MariaDB
 
-Use the `install_mariadb.sh` script to install mariaDB. When installing setting a password for the root user is required, using a password manager to generate & save this password is recommended.
+Use the `install_mariadb.sh` script to install MariaDB. When installing setting a password for the root user is required, using a password manager to generate & save this password is recommended.
 
-After the installation is complete access to the database can be done through `mysql -u root -p`. When prompted for the root password enter the previously entered root password. Using a non-root account is ofcourse recommended.
+After the installation is complete access to the database can be done through `mysql -u root -p`. When prompted for the root password enter the previously entered root password. Using a non-root account is of course recommended.
 
 These links should show how adding and removing users works
 - [mariadb.com - create-user](https://mariadb.com/kb/en/library/create-user/)
 - [tableplus.io - mariadb-how-to-create-new-user-and-grant-privileges](https://tableplus.io/blog/2018/09/mariadb-how-to-create-new-user-and-grant-privileges.html)
 - [daniloaz - how-to-create-a-user-in-mysql-mariadb-and-grant-permissions-on-specific-database](http://www.daniloaz.com/en/how-to-create-a-user-in-mysql-mariadb-and-grant-permissions-on-a-specific-database/)
 
-### git server (gogs / gitea)
+### git server (Gogs / Gitea)
 
-Gogs is a standalone git server and gitea is a fork of gogs.
+Gogs is a standalone git server and Gitea is a fork of Gogs.
 
 #### Gogs
 
-> Having mariaDB set up is required for this to work. Optionally sqlite can also be used.
+> Having MariaDB set up is required for this to work. Optionally sqlite can also be used.
 
-To install gogs use the `install_gogs.sh` script and then follow the configuration steps in the browser. The script creates a new user called `git` which will be the user gogs uses. It then downloads gogs, unzips it, moves it to the git home directory. It will prompt for the root database password and then create a new database user named gogs (and prompts for a password) and a `gogs` database. After that it starts gogs. Open `<hostname>:3000/install` to configure gogs. Enter the database user and password (gogs and the previously entered). 
+To install Gogs use the `install_Gogs.sh` script and then follow the configuration steps in the browser. The script creates a new user called `git` which will be the user Gogs uses. It then downloads Gogs, unzips it, moves it to the git home directory. It will prompt for the root database password and then create a new database user named Gogs (and prompts for a password) and a `Gogs` database. After that it starts Gogs. Open `<hostname>:3000/install` to configure Gogs. Enter the database user and password (Gogs and the previously entered). 
 
-The directory structure of gogs is as follows
+The directory structure of Gogs is as follows
 
 ```
-gogs
-|> gogs (executable)
-|> scripts (gogs build / ... scripts; better not touch)
+Gogs
+|> Gogs (executable)
+|> scripts (Gogs build / ... scripts; better not touch)
 |> custom (for adding certain things yourself; does not exist by default)
 |  |> conf
 |  |  |> locale (changing / adding translations (locales))
@@ -114,7 +114,7 @@ gogs
 |  |> assets
 |  |> css
 |  |> img
-|  |> plugins (jquery, ...)
+|  |> plugins (jQuery, ...)
 |> templates (html templates)
 |  |> admin
 |  |> base
@@ -129,9 +129,9 @@ gogs
 |  |> install.tmpl
 ```
 
-You can add things inside `custom/templates` and if needed modify things inside the normal `templates/` directory. Also adding a new css file or similar to the `public` folder is also possible. Generally don't touch the `scripts` folder and don't touch the `app.ini` unless you know what you are doing (If you decide to edit the config file, take a look [here](https://gogs.io/docs/advanced/configuration_cheat_sheet) for documentation). 
+You can add things inside `custom/templates` and if needed modify things inside the normal `templates/` directory. Also adding a new css file or similar to the `public` folder is also possible. Generally don't touch the `scripts` folder and don't touch the `app.ini` unless you know what you are doing (If you decide to edit the config file, take a look [here](https://Gogs.io/docs/advanced/configuration_cheat_sheet) for documentation). 
 
-Incase you want a mobile friendly and otherwise also improved gogs copy the changes (unchanged files (in `templates/`) are also in here, meaning you should be able to just replace the templates folder completely) from [here](https://github.com/JannikWibker/gogs-reskin) into your gogs installation.
+Incase you want a mobile friendly and otherwise also improved Gogs copy the changes (unchanged files (in `templates/`) are also in here, meaning you should be able to just replace the templates folder completely) from [here](https://github.com/JannikWibker/Gogs-reskin) into your Gogs installation.
 
 ### docsify
 
@@ -151,7 +151,7 @@ Samba is the Linux-port of the SMB Protocol (created by Microsoft). This allows 
 
 Installing Samba is not hard, what may be hard is configuring everything correctly and getting everything to work out fine. Especially permissions can be somewhat annoying to deal with when using samba since a simple "you can do everything"-solution is as easy as setting a single value. Actual directory permissions as well as permissions inside the configuration of the share need to allow that.
 
-One thing that definetly needs to be done is creating samba users / setting passwords for users. This is done through the command `smbpasswd`:
+One thing that definitely needs to be done is creating samba users / setting passwords for users. This is done through the command `smbpasswd`:
 
 ```sh
 smbpasswd -a <user>
@@ -194,7 +194,7 @@ workgroup = <windows workgroup>
 wins support = yes
 ```
 
-> Note: Using the `smbtree -U <user>` command you can scan your local network for available smb shares that can be accessed by the given user. 
+> Note: Using the `smbtree -U <user>` command you can scan your local network for available SMB shares that can be accessed by the given user. 
 
 ## Domain stuff
 
@@ -206,13 +206,13 @@ Other paid domains can of course be used aswell.
 
 ### Dynamic DNS
 
-Cloudflare can be used as a dynamic dns and allows CNAMEs and other fancy DNS stuff and also allows using your own domnain. Alongside all the other cool features Cloudflare offers this basically makes Cloudflare the perfect solution for dyndns.
+Cloudflare can be used as a dynamic DNS and allows CNAMEs and other fancy DNS stuff and also allows using your own domain. Alongside all the other cool features Cloudflare offers this basically makes Cloudflare the perfect solution for DynDNS.
 
-Make a free account with Cloudflare and go through the Setup process for your new domain, select the free plan and copy the 2 dns server domains that Cloudflare gives you. Enter them on [freeonom](https://freenom.com) or where ever you have your domain located. It may take some time before everything "synchronizes" and works out duo to how DNS works (DNS things can take up to 24h, but are usually a lot faster (maybe 5min - 2h)). After that complete the Cloudflare setup and get your Cloudflare API key which is needed for ddclient.
+Make a free account with Cloudflare and go through the Setup process for your new domain, select the free plan and copy the 2 DNS server domains that Cloudflare gives you. Enter them on [freeonom](https://freenom.com) or where ever you have your domain located. It may take some time before everything "synchronizes" and works out duo to how DNS works (DNS things can take up to 24h, but are usually a lot faster (maybe 5min - 2h)). After that complete the Cloudflare setup and get your Cloudflare API key which is needed for ddclient.
 
 Inside Cloudflare DNS records can be created somewhat freely. A, AAAA, CNAME, MX, TXT, NS, and many more types of records can be used. Cloudflare only allows one layer of subdomains / CNAMEs (Cloudflare does something called "CNAME Flattening"), this means that things like `api.application.domain.tld` won't work, but things like `api-application.domain.tld` will work.
 
-Create a A-record and enter your current public ip address (this process will later be automated via ddclient). Then create as many CNAME records as you want with the wanted subdomain as "Name" and an "@" as "Domain name". The `@` is a synonym for the current domain. This means that `subdomain.domain.tld` will point to `domain.tld`. This might seem to be wrong at first sight, but the idea behind this is that everything is sent to the Pi, then processed by nginx and reverse proxied to the correct application / service depending on subdomain. So the "routing" is done directly on the Pi and not on DNS level.
+Create a A record and enter your current public IP address (this process will later be automated via ddclient). Then create as many CNAME records as you want with the wanted subdomain as "Name" and an "@" as "Domain name". The `@` is a synonym for the current domain. This means that `subdomain.domain.tld` will point to `domain.tld`. This might seem to be wrong at first sight, but the idea behind this is that everything is sent to the Pi, then processed by nginx and reverse proxied to the correct application / service depending on subdomain. So the "routing" is done directly on the Pi and not on DNS level.
 
 This is how the DNS records might look for you.
 
@@ -263,7 +263,7 @@ First of all comment out anything that might already be in the file or delete it
 
 For the basic website (which will be running under example.ml and www.example.ml) either proxy it to apache2 or use nginx itself. When using apache2 make sure to change the default port from 80 to something else (and from 443 to something else too). These ports will be occupied by nginx. 
 
-For each subdomain / service create new server blocks and add a `server_name`-entry with all the domains that will redirect there (seperated by spaces, **not** commas). Aswell as that add two `listen`-entries with the port to listen on (one of the ports has to be prefixed with `[::]:` for IPv6 support, thats also why 2 entries have to exist). The first entry also gets a `default_server` after its listen entries. Optionally add 443 as a port aswell if HTTPS/SSL/TLS support is needed. Here's where Cloudflare Origin Certificates become useful.
+For each subdomain / service create new server blocks and add a `server_name`-entry with all the domains that will redirect there (separated by spaces, **not** commas). As well as that add two `listen`-entries with the port to listen on (one of the ports has to be prefixed with `[::]:` for IPv6 support, that's also why 2 entries have to exist). The first entry also gets a `default_server` after its listen entries. Optionally add 443 as a port as well if HTTPS/SSL/TLS support is needed. Here's where Cloudflare Origin Certificates become useful.
 
 ```
 # www.example.ml, example.ml
@@ -340,7 +340,7 @@ Then after that add `location`-blocks. These will decide what to do with the inc
   }
 ```
 
-Incase you want custom logging you can specify a log format and file for each server block. Specifying a global log format is also possible.
+In case you want custom logging you can specify a log format and file for each server block. Specifying a global log format is also possible.
 
 ```diff
 + log_format cf '[$time_local] $request ($status) - $request_time - $http_x_forwarded_for $remote_addr $server_port ($http_user_agent) $http_cf_ipcountry - $body_bytes_sent - $gzip_ratio - $http_cf_ray';
